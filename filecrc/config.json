@@ -1,0 +1,21 @@
+{
+    "rootdir"   : "/Development/Rotary_CURRENT",
+    "zipname"   : "filesinfo.zip",
+    "filename"  : "stats.txt",
+    "password"  : "dacdbrocks",
+    "exclude"   : [".svn"],
+    "sendmail"  : true,
+    "email"     : 
+                {
+                    "server"    : "mail.dacdb.net",
+                    "port"      : 587,
+                    "user"      : "talend@dacdb.com",
+                    "code"      : "bkV8yta7v2X",
+                    "from"      : "talend@dacdb.com",
+                    "to"        : ["peter@dacdb.com"],
+                    "cc"        : [],
+                    "subject"   : "Filecrc generation status",
+                    "attach"    : ["zip", "log"]
+                },
+    "logfile" : "filecrc.log"
+}

@@ -1,0 +1,15 @@
+{
+    "verbose"   : false,
+    "webroot"   : "c:/Development/Rotary_CURRENT",
+    "paths"     : ["/CFC", "/CFC2"],
+    "vars"      : {
+                    "APPLICATION.DIR":"/", 
+                    "APPLICATION.SITECFCDIRECTORY":"/CFC/"},
+    "exclude"   : ["/Application.cfc"],
+    "skipdirs"  : ["Util/SaveOld"],
+    "save"      : {
+                    "missing":"missing.txt", 
+                    "orphans":"orphans.txt", 
+                    "log":"log.txt"
+                  }
+}
