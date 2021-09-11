@@ -1,8 +1,8 @@
 {
-    "rootdir"   : "/Development/Rotary_CURRENT",
-    "zipname"   : "filesinfo.zip",
-    "filename"  : "stats.txt",
-    "password"  : "dacdbrocks",
+    "rootdirs"   : ["c:/Development/DACdbAPI/APIProd", "c:/Development/DACdbAPI/APITest"],
+    "zipname"   : "dacdbfiles.zip",
+    "filename"  : "dacdbfiles.txt",
+    "password"  : "",
     "exclude"   : [".svn"],
     "sendmail"  : true,
     "email"     : 
@@ -17,5 +17,5 @@
                     "subject"   : "Filecrc generation status",
                     "attach"    : ["zip", "log"]
                 },
-    "logfile" : "filecrc.log"
+    "logfile" : "dacdbfiles.log"
 }

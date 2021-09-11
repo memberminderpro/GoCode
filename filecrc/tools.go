@@ -40,7 +40,7 @@ type crcInfo struct {
 
 // compressFile Create an encrypted zip with a file from string contents
 // zipName:	Name of the zip file to create
-// password: Encryption password
+// password: Encryption password (empty if no emcryption)
 // fileName: Name of the encrypted file in the zip file
 // contents: A byte buffer of the contents to write
 func compressFile(zipName, password, fileName string, contents []byte) error {
@@ -54,9 +54,15 @@ func compressFile(zipName, password, fileName string, contents []byte) error {
 	defer fileWriter.Close()
 
 	// Create the zip writer for the file
+	var zipWriter io.Writer
 	zipper := zip.NewWriter(fileWriter)
 
-	zipWriter, err := zipper.Encrypt(fileName, password, zip.AES256Encryption)
+	// Create an encrypted ZIP if a password was provided
+	if len(password) == 0 {
+		zipWriter, err = zipper.Create(fileName)
+	} else {
+		zipWriter, err = zipper.Encrypt(fileName, password, zip.AES256Encryption)
+	}
 
 	if err != nil {
 		return err
@@ -125,7 +131,7 @@ func uncompressFile(zipName, fileName, password string) ([]byte, error) {
 	}
 
 	// Can't find the requested file in the zip
-	return nil, fmt.Errorf("The file '%s' is not in the zip file '%s'", fileName, zipName)
+	return nil, fmt.Errorf("the file '%s' is not in the zip file '%s'", fileName, zipName)
 }
 
 // sendEmail Send an HTML email to the designated recipients
@@ -221,15 +227,13 @@ func buildCRCLine(info crcInfo) string {
 // parseCRCLine Parse a line of file status into a CRCInfo
 func parseCRCLine(line string) (crcInfo, error) {
 	// Remove trailing newline if there
-	if strings.HasSuffix(line, "\n") {
-		line = line[:len(line)-1]
-	}
+	line = strings.TrimSuffix(line, "\n")
 
 	// Split the string first
 	parts := strings.Split(line, FieldSep)
 
 	if len(parts) != 4 {
-		return crcInfo{}, fmt.Errorf("The line '%s' is invalid", line)
+		return crcInfo{}, fmt.Errorf("the line '%s' is invalid", line)
 	}
 
 	// Build the info

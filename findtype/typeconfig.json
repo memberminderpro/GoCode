@@ -1,0 +1,16 @@
+{
+    "rootdirs"    : ["c:/ColdFusion2018", "C:/ColdFusion2018APIManager"],
+    "extensions"  : ["php", "exe", "bat", "cmd"],
+    "sendmail"    : true,
+    "logfile"     : "file_extensions.log",
+    "email"       : 
+    {
+        "server"    : "mail.dacdb.net",
+        "port"      : 587,
+        "user"      : "talend@dacdb.com",
+        "code"      : "bkV8yta7v2X",
+        "from"      : "talend@dacdb.com",
+        "to"        : ["peter@dacdb.com", "mark@dacdb.com"],
+        "cc"        : []
+    }
+}

@@ -10,7 +10,7 @@ import (
 
 // JSON Configuration keyword constants
 const (
-	KwRootDir      = "rootdir"  // JZON Config root direcgtory
+	KwRootDirs     = "rootdirs" // JSON Config root direcgtory
 	KwZipName      = "zipname"  // JSON Config name of the zip file
 	KwFileName     = "filename" // JSON Config name of the file within the zip
 	KwPassword     = "password" // JSON Config zip password
@@ -39,7 +39,7 @@ const (
 // getParms Read and parse the JSON configuration file
 func getParms() error {
 	if len(os.Args) < 2 {
-		return fmt.Errorf("You must specify a configuration file name")
+		return fmt.Errorf("you must specify a configuration file name")
 	}
 
 	// Read the config file
@@ -64,15 +64,15 @@ func getParms() error {
 	// Process JSON
 	for key, val := range argMap {
 		switch strings.ToLower(key) {
-		case KwRootDir:
-			// The root dir should only uae forward clashes and NOT end in one for comparisons
-			rootDir = strings.ReplaceAll(val.(string), `\`, "/")
-			if strings.HasSuffix(rootDir, "/") {
-				// Remove the trailing slash
-				rootDir = rootDir[1:]
+		case KwRootDirs:
+			for _, filename := range val.([]interface{}) {
+				// CHange backslash to slash and remove any trailing slash
+				dirName := strings.TrimSuffix(strings.ReplaceAll(filename.(string), `\`, "/"), "/")
+
+				// Add to the list of root directories
+				rootDirs = append(rootDirs, strings.ToLower(dirName))
 			}
-			// Set the size
-			rootDirSize = len(rootDir)
+
 		case KwZipName:
 			zipFileName = val.(string)
 		case KwFileName:
@@ -149,8 +149,8 @@ func getParms() error {
 	}
 
 	// Verify parms
-	if len(rootDir) == 0 {
-		fmt.Fprintf(os.Stderr, "The root directory name parameter, %s, is required\n", KwRootDir)
+	if len(rootDirs) == 0 {
+		fmt.Fprintf(os.Stderr, "The root directory name parameter, %s, is required\n", KwRootDirs)
 		success = false
 	}
 
@@ -232,7 +232,7 @@ func getParms() error {
 
 	// Return
 	if !success {
-		return fmt.Errorf("Errors was found in processing the configuration")
+		return fmt.Errorf("errors was found in processing the configuration")
 	}
 
 	// success

@@ -10,8 +10,9 @@ import (
 )
 
 // Runtime parameters from the config
-var rootDir string                                // Starting directory
-var rootDirSize int                               // Size of the root directory used for making slices to get end dir
+var RoorDir string                                // Global variable for te recursive tree walking
+var RootDirSize int                               // Length of the root directory name
+var rootDirs []string = make([]string, 0)         // Starting directories
 var zipFileName string                            // Zip file name
 var outputFileName string                         // Name of the output file in the zip file
 var emailCredentials credentials                  // Credentials for accessing email
@@ -43,7 +44,7 @@ func main() {
 		os.Exit(2)
 	}
 
-	// CLose the log file if not stdout
+	// Close the log file if not stdout
 	if logWriter != os.Stdout {
 		defer logWriter.Close()
 	}
@@ -130,7 +131,7 @@ func initialize() (err error) {
 	// Check status
 	if !success {
 		fmt.Fprintf(os.Stderr, "Initializtion errors we encountered, processing terminated")
-		return fmt.Errorf("Initialization error")
+		return fmt.Errorf("initialization error")
 	}
 
 	// Success
@@ -162,12 +163,18 @@ func process() (err error) {
 		fmt.Fprintf(logWriter, "Loading the first run from the root dir\n")
 	}
 
-	// Walk the tree
-	err = filepath.Walk(rootDir, walkTree)
+	// Walk the trees
+	for _, RootDir := range rootDirs {
+		// Get the size to speed up comparisons
+		RootDirSize = len(RootDir)
 
-	if err != nil {
-		fmt.Fprintf(logWriter, "Error initializing directory processing for %s\n", rootDir)
-		return err
+		// Walk the tree
+		err = filepath.Walk(RootDir, walkTree)
+
+		if err != nil {
+			fmt.Fprintf(logWriter, "Error initializing directory processing for %s\n", RootDir)
+			return err
+		}
 	}
 
 	// Save the file
@@ -178,15 +185,15 @@ func process() (err error) {
 }
 
 // Walk the directory tree and oricess all files (not directories or links)
-func walkTree(path string, info os.FileInfo, err error) error {
+func walkTree(path string, info os.FileInfo, callerErr error) error {
 	// Clean up the slashes
 	path = strings.ReplaceAll(path, `\`, "/")
 
 	// Only process file names and not directories
 	if info.IsDir() {
-		// Check if you need toskip this entire directory
-		if len(path) > rootDirSize {
-			subDir := strings.ToLower(path[rootDirSize:])
+		// Check if you need to skip this entire directory
+		if len(path) > RootDirSize {
+			subDir := strings.ToLower(path[RootDirSize:])
 			if _, found := excludes[subDir]; found {
 				fmt.Fprintf(logWriter, "Skipping direcory: %s\n", path)
 				return filepath.SkipDir
