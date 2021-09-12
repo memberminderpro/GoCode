@@ -17,7 +17,9 @@ var (
 	fileCt           int            = 0                    // numner of files scanned
 	dirCt            int            = 0                    // Number of directories scanned
 	extCt            int            = 0                    // Total ext matches
+	skipCt           int            = 0                    // Number of skipped files
 	emailFlag        bool           = false                // Flag to send emails
+	logNamesFlag     bool           = true                 // FLag to indicate if there should be file name logging
 	emailCredentials credentials                           // Credentials for accessing email
 	emailFrom        string                                // Email from email address
 	emailToList      []string       = make([]string, 0)    // To distribution list
@@ -183,6 +185,8 @@ func printStats(log io.Writer, newLine string) {
 	// Print summary stats
 	fmt.Fprintf(log, "Directories scanned: %d%s", dirCt, newLine)
 	fmt.Fprintf(log, "Files checked: %d%s", fileCt, newLine)
+	fmt.Fprintf(log, "Files skipped: %d%s", skipCt, newLine)
+
 	fmt.Fprintf(log, "Extensions found: %d%s", extCt, newLine)
 
 	// Print the extensions found
@@ -191,6 +195,12 @@ func printStats(log io.Writer, newLine string) {
 	}
 }
 func walkTree(path string, info os.FileInfo, callerErr error) error {
+	// If you can't access the info, skip the file
+	if info == nil || callerErr != nil {
+		skipCt++
+		return nil
+	}
+
 	// Only process file names and not directories
 	if info.IsDir() {
 		// Skip proecssing just a directory name
@@ -208,8 +218,12 @@ func walkTree(path string, info os.FileInfo, callerErr error) error {
 	if lastDot+1 < len(path) {
 		suffix := strings.ToLower(path[lastDot+1:])
 		if _, found := extensions[suffix]; found {
-			// Log it and increment the count for that extension
-			fmt.Fprintf(logWriter, "%s\n", path)
+			// Log it, if requested
+			if logNamesFlag {
+				fmt.Fprintf(logWriter, "%s\n", path)
+			}
+
+			// Increment counts
 			extensions[suffix]++
 			extCt++
 		}

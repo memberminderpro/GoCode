@@ -13,6 +13,7 @@ const (
 	KwRootDirs    = "rootdirs"   // JSON Config root direcgtory
 	KwExtensions  = "extensions" // JSON Config list of extensions to check
 	KwSendMail    = "sendmail"   // JSON Config flag to indicate that email should be sent
+	KwLogNames    = "lognames"   // Flag to indicate if file name logging should take place
 	KwLogFile     = "logfile"    // JSON Config log file name
 	KwEmail       = "email"      // JSON Config email information
 	KwEmailServer = "server"     // JSON Config email server name
@@ -58,8 +59,8 @@ func getParms() error {
 		switch strings.ToLower(key) {
 		case KwRootDirs:
 			for _, filename := range val.([]interface{}) {
-				// CHange backslash to slash and remove any trailing slash
-				dirName := strings.TrimSuffix(strings.ReplaceAll(filename.(string), `\`, "/"), "/")
+				// Change backslash to slash - keep trailing slash for things like c:/
+				dirName := strings.ReplaceAll(filename.(string), `\`, "/")
 
 				// Add to the list of root directories
 				rootDirs = append(rootDirs, dirName)
@@ -84,6 +85,9 @@ func getParms() error {
 
 		case KwLogFile:
 			logFileName = val.(string)
+
+		case KwLogNames:
+			logNamesFlag = val.(bool)
 
 		case KwEmail:
 			// Initialzie credentials struct

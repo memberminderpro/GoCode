@@ -12,23 +12,27 @@ func usage() {
 		`
 {
     "rootdirs"   : ["c:/Dir1", "c:/Dir2"],
-    "extensions" : ["ext1", "ext2"]
-    "sendmail"   : true
-    "logfile"    : "findtype.log"
-    "email"      : {
+    "extensions" : ["ext1", "ext2"],
+    "sendmail"   : true,
+    "logfile"    : "findtype.log",
+	"logging"    : true,
+    "email"      : 
+	{
         "server"  : "mail.server.net",
         "port"    : 587,
         "user"    : "dacdb@example.com",
         "code"    : "secret",
         "from"    : "talend@dacdb.com",
         "to"      : ["peter@dacdb.com"],
-        "cc"      : [],    },
+        "cc"      : [],    
+	}
 }`)
 
 	fmt.Fprintf(os.Stderr, "Keywords\n")
 	fmt.Fprintf(os.Stderr, "%s: Specifies a list of root diretories to scan \n", KwRootDirs)
 	fmt.Fprintf(os.Stderr, "%s: Specifies the list of file name extsnsions to check for\n", KwExtensions)
-	fmt.Fprintf(os.Stderr, "%s: Specifies an optional log output file (default: stdout)\n", KwLogFile)
+	fmt.Fprintf(os.Stderr, "%s: Specifies an optional log output file\n", KwLogFile)
+	fmt.Fprintf(os.Stderr, "%s: Specifies if file names should be logged (default: true)\n", KwLogNames)
 	fmt.Fprintf(os.Stderr, "%s: Specifies whether to send an email or not\n", KwSendMail)
 	fmt.Fprintf(os.Stderr, "%s: Specifies the email server name\n", KwEmailServer)
 	fmt.Fprintf(os.Stderr, "%s: Specifies the email server port\n", KwEmailPort)

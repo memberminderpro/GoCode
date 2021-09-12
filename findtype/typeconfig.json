@@ -1,7 +1,8 @@
 {
-    "rootdirs"    : ["c:/ColdFusion2018", "C:/ColdFusion2018APIManager"],
+    "rootdirs"    : ["c:/"],
     "extensions"  : ["php", "exe", "bat", "cmd"],
-    "sendmail"    : true,
+    "sendmail"    : false,
+    "lognames"    : false,
     "logfile"     : "file_extensions.log",
     "email"       : 
     {
