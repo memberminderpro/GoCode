@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gophish/gomail"
 )
@@ -28,6 +29,7 @@ var (
 	logFileName      string                                // Name for logging (defaults to stderr)
 	hostName         string         = ""                   // Text name of the server for email comments
 	logWriter        *os.File       = os.Stdout            // Default log output
+	runTime          time.Duration                         // Run time in seconds
 )
 
 // EmailCredentials Email credentials
@@ -39,6 +41,8 @@ type credentials struct {
 }
 
 func main() {
+	startTime := time.Now()
+
 	// Initialize and check status
 	parseErrs := getParms()
 
@@ -70,6 +74,10 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(logWriter, err)
 	}
+
+	// Get stop time
+	stopTime := time.Now()
+	runTime = stopTime.Sub(startTime)
 
 	// Display some stats before the email so they're in the logfile
 	printStats(logWriter, "\n")
@@ -196,6 +204,8 @@ func printStats(log io.Writer, newLine string) {
 	for ext, ct := range extensions {
 		fmt.Fprintf(log, "  Extension %s: %d%s", ext, ct, newLine)
 	}
+
+	fmt.Fprintf(log, "Processing completed in %5.2f minutes%s", runTime.Minutes(), newLine)
 }
 func walkTree(path string, info os.FileInfo, callerErr error) error {
 	// If you can't access the info, skip the file
