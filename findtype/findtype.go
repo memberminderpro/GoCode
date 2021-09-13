@@ -26,6 +26,7 @@ var (
 	emailCCList      []string       = make([]string, 0)    // Email CC distribution list
 	emailSubject     string                                // Email subject
 	logFileName      string                                // Name for logging (defaults to stderr)
+	hostName         string         = ""                   // Text name of the server for email comments
 	logWriter        *os.File       = os.Stdout            // Default log output
 )
 
@@ -167,7 +168,7 @@ func processEmail(err error) error {
 	}
 
 	// Build the email subject
-	emailSubject := fmt.Sprintf("Found %d file extensions from %s in %v", extCt, extList, rootDirs)
+	emailSubject := fmt.Sprintf("%s: found %d file extensions from %s in %v", hostName, extCt, extList, rootDirs)
 
 	// Send the email
 	err = sendEmail(emailFrom, emailToList, emailCCList, emailSubject, message, attachFiles, emailCredentials)
@@ -182,6 +183,8 @@ func processEmail(err error) error {
 }
 
 func printStats(log io.Writer, newLine string) {
+	fmt.Fprintf(log, "Statistics for %s%s", hostName, newLine)
+
 	// Print summary stats
 	fmt.Fprintf(log, "Directories scanned: %d%s", dirCt, newLine)
 	fmt.Fprintf(log, "Files checked: %d%s", fileCt, newLine)

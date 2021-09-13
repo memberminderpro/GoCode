@@ -1,9 +1,10 @@
 {
-    "rootdirs"    : ["c:/"],
+    "rootdirs"    : ["c:/Development/GoProjects/src/dacdb.com"],
     "extensions"  : ["php", "exe", "bat", "cmd"],
-    "sendmail"    : false,
+    "sendmail"    : true,
     "lognames"    : false,
     "logfile"     : "file_extensions.log",
+    "hostname"  : "MyLaptop",
     "email"       : 
     {
         "server"    : "mail.dacdb.net",
@@ -11,7 +12,7 @@
         "user"      : "talend@dacdb.com",
         "code"      : "bkV8yta7v2X",
         "from"      : "talend@dacdb.com",
-        "to"        : ["peter@dacdb.com", "mark@dacdb.com"],
+        "to"        : ["peter@dacdb.com"],
         "cc"        : []
     }
 }

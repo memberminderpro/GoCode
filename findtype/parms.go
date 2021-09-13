@@ -24,6 +24,7 @@ const (
 	KwEMailTo     = "to"         // JSON Config email to distribution
 	KwEmailCC     = "cc"         // JSON Config cc distribution list
 	KwEmailAttach = "attach"     // JSON Config switch to attach finished zip file
+	KwHostName    = "hostname"   // Server host name for the email
 )
 
 // Other constants
@@ -88,6 +89,9 @@ func getParms() error {
 
 		case KwLogNames:
 			logNamesFlag = val.(bool)
+
+		case KwHostName:
+			hostName = val.(string)
 
 		case KwEmail:
 			// Initialzie credentials struct
@@ -173,6 +177,10 @@ func getParms() error {
 		if len(emailCredentials.password) == 0 {
 			fmt.Fprintf(os.Stderr, "The email login password, %s, was not specified\n", KwEmailCode)
 			success = false
+		}
+
+		if len(hostName) == 0 {
+			hostName, _ = os.Hostname()
 		}
 	}
 

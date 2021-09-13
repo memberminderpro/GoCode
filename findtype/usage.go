@@ -16,6 +16,7 @@ func usage() {
     "sendmail"   : true,
     "logfile"    : "findtype.log",
 	"logging"    : true,
+	"hostname"   : "MyHost",
     "email"      : 
 	{
         "server"  : "mail.server.net",
@@ -33,6 +34,7 @@ func usage() {
 	fmt.Fprintf(os.Stderr, "%s: Specifies the list of file name extsnsions to check for\n", KwExtensions)
 	fmt.Fprintf(os.Stderr, "%s: Specifies an optional log output file\n", KwLogFile)
 	fmt.Fprintf(os.Stderr, "%s: Specifies if file names should be logged (default: true)\n", KwLogNames)
+	fmt.Fprintf(os.Stderr, "%s: Specifies the name of the host\n", KwHostName)
 	fmt.Fprintf(os.Stderr, "%s: Specifies whether to send an email or not\n", KwSendMail)
 	fmt.Fprintf(os.Stderr, "%s: Specifies the email server name\n", KwEmailServer)
 	fmt.Fprintf(os.Stderr, "%s: Specifies the email server port\n", KwEmailPort)
