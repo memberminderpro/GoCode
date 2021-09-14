@@ -89,6 +89,7 @@ var variables map[string]string = make(map[string]string)          // Map of var
 var skipDirs map[string]interface{} = make(map[string]interface{}) // Directories to skip
 var verboseMode bool = false                                       // Verbose output setting
 var crossRefNames []string = make([]string, 0)                     // Array of names to produce a cross reference for
+var crossRefAll bool = false                                       // Flag to indicate to generate a cross ref for everything
 
 // Counters
 var missingFuncCt int = 0   // Number of missing functions
@@ -143,15 +144,16 @@ func main() {
 	displayOrphans()
 
 	// Display cross references
-	for _, componentName := range crossRefNames {
-		if strings.EqualFold(componentName, "all") {
-			fmt.Fprintf(logWriter, "The 'all' cross reference option is not yet supported")
-			fmt.Fprintf(os.Stderr, "The 'all' cross reference option is not yet supported")
-			break
+	if crossRefAll {
+		// Process each name from the xref's
+		for _, entry := range xref {
+			crossReference(entry.name)
 		}
-
-		// Generate cross reference
-		crossReference(componentName)
+	} else {
+		for _, componentName := range crossRefNames {
+			// Generate cross reference
+			crossReference(componentName)
+		}
 	}
 
 	fmt.Fprintf(logWriter, "\n")
@@ -171,7 +173,7 @@ func main() {
 
 // pgmUsage Display sample usage
 func pgmUsage() {
-	fmt.Fprintf(os.Stderr, "Usage: cfxref config.json {list of components to display cross reference}\n\n")
+	fmt.Fprintf(os.Stderr, "Usage: cfxref config.json {optional list of components to show cross reference or all}\n\n")
 	fmt.Fprintf(os.Stderr, "Sample JSON:\n%s\n",
 		`
 {
@@ -185,7 +187,7 @@ func pgmUsage() {
 }`)
 
 	fmt.Fprintf(os.Stderr, "Keywords\n")
-	fmt.Fprintf(os.Stderr, "%s: a flag to enable verbose logging (boolean: true|false)\n", KwRoot)
+	fmt.Fprintf(os.Stderr, "%s: a flag to enable verbose logging (boolean: true|false)\n", KwVerbose)
 	fmt.Fprintf(os.Stderr, "%s: The fully qualified web root directory\n", KwRoot)
 	fmt.Fprintf(os.Stderr, "%s: An array of path names relative to the web root\n", KwPaths)
 	fmt.Fprintf(os.Stderr, "%s: A set of json varname=value specifications\n", KwVars)
@@ -198,7 +200,7 @@ func pgmUsage() {
 // getParms Get the parms from the command line argument and process
 func getParms() error {
 	if len(os.Args) < 2 {
-		return fmt.Errorf("A JSON configuration file must be specified")
+		return fmt.Errorf("a JSON configuration file must be specified")
 	}
 
 	// Read the config file
@@ -272,13 +274,25 @@ func getParms() error {
 				}
 			}
 		default:
-			return fmt.Errorf("Invalid JSON configuration keyword '%s'", key)
+			return fmt.Errorf("invalid JSON configuration keyword '%s'", key)
 		}
 	}
 
 	// Get optional parameters
 	if len(os.Args) > 2 {
 		for index := 2; index < len(os.Args); index++ {
+			if strings.EqualFold(os.Args[index], "all") {
+				if crossRefAll {
+					fmt.Fprintf(os.Stderr, "You may only specify 'all' once\n")
+					passed = false
+				} else {
+					crossRefAll = true
+				}
+
+				continue
+			}
+
+			//Add the name to the list
 			crossRefNames = append(crossRefNames, os.Args[index])
 		}
 	}
@@ -322,14 +336,19 @@ func getParms() error {
 
 	// CHeck for success
 	if !passed {
-		return fmt.Errorf("Errors were encountered processing the configuration")
+		return fmt.Errorf("errors were encountered processing the configuration")
 	}
 
 	// All done, return success
 	return nil
 }
 
-func walkTree(path string, info os.FileInfo, err error) error {
+func walkTree(path string, info os.FileInfo, callerErr error) error {
+	// If you can't access the info, skip the file
+	if info == nil || callerErr != nil {
+		return nil
+	}
+
 	// Only process valid cfm or cfc file names and not directories
 	if info.IsDir() {
 		// Check for directoriess to skip
@@ -396,9 +415,7 @@ func cleanDirName(name string) string {
 	}
 
 	// Remove any trailing slash
-	if strings.HasSuffix(name, "/") {
-		name = name[:len(name)-1]
-	}
+	name = strings.TrimSuffix(name, "/")
 
 	// Return the clean name
 	return name
@@ -506,7 +523,7 @@ func processFunction(matches [][]string, fileName string, lineNo int) (err error
 
 	// Make sure the 'name' keyword is defined
 	if !strings.EqualFold("name", matches[1][3]) {
-		return fmt.Errorf("The cffunction at line %d in file %s is invalid", lineNo, fileName)
+		return fmt.Errorf("the cffunction at line %d in file %s is invalid", lineNo, fileName)
 	}
 
 	// Process the name of this function
@@ -651,7 +668,7 @@ func lookupComponent(compName string) (map[string]funcDef, error) {
 	}
 
 	// No joy
-	return nil, fmt.Errorf("The component '%s' was not found in the default path or in %q", compName, tagPath)
+	return nil, fmt.Errorf("the component '%s' was not found in the default path or in %q", compName, tagPath)
 }
 
 // processOrphans Funused components and functions
