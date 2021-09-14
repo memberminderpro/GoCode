@@ -36,8 +36,27 @@ func getParms() error {
 		return fmt.Errorf("you must specify a configuration file name")
 	}
 
+	// Check for a -v switch
+	var configSpec string
+	if len(os.Args) >= 2 {
+		// Check for verify switch
+		if strings.EqualFold(os.Args[1], "-v") {
+			if len(os.Args) != 3 {
+				// There's a -v but no config file
+				return fmt.Errorf("you must specify a configuration file with -v")
+			}
+
+			// Verify switch with a config parameter
+			parseParmsOnly = true
+			configSpec = os.Args[2]
+		} else {
+			// No verify switch
+			configSpec = os.Args[1]
+		}
+	}
+
 	// Read the config file
-	config, err := ioutil.ReadFile(os.Args[1])
+	config, err := ioutil.ReadFile(configSpec)
 
 	if err != nil {
 		return err

@@ -7,7 +7,8 @@ import (
 
 // usage Display program usage
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: filecrc config.json {previousFileName}\n\n")
+	fmt.Fprintf(os.Stderr, "Usage: [-v] filecrc config.json {previousFileName}\n")
+	fmt.Fprintf(os.Stderr, "  use -v to verify the configuration file contents\n\n")
 	fmt.Fprintf(os.Stderr, "Sample JSON:\n%s\n",
 		`
 {

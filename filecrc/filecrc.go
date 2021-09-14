@@ -23,6 +23,7 @@ var emailCCList []string = make([]string, 0)      // Email CC distribution list
 var emailSubject string                           // Email subject
 var emailAttachments []string = make([]string, 0) // Collection of logical file names to attach
 var logFileName string                            // Name for logging (defaults to stderr)
+var parseParmsOnly bool = false                   // Flag to only verify the config file
 
 // Variables used at runtime
 var emailFlag bool = true                                          // Flag to indicate tha to send emails at the end
@@ -42,6 +43,12 @@ func main() {
 		fmt.Fprintln(os.Stderr, parseErrs)
 		usage()
 		os.Exit(2)
+	}
+
+	// Check if only validating the parms
+	if parseParmsOnly {
+		fmt.Fprintln(os.Stdout, "The configuration file is correct")
+		os.Exit(0)
 	}
 
 	// Close the log file if not stdout

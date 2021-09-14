@@ -30,6 +30,7 @@ var (
 	hostName         string         = ""                   // Text name of the server for email comments
 	logWriter        *os.File       = os.Stdout            // Default log output
 	runTime          time.Duration                         // Run time in seconds
+	parseParmsOnly   bool           = false                // Only verify parms are correct, do not run
 )
 
 // EmailCredentials Email credentials
@@ -50,6 +51,12 @@ func main() {
 		fmt.Fprintln(os.Stderr, parseErrs)
 		usage()
 		os.Exit(2)
+	}
+
+	// Check if only validating the parms
+	if parseParmsOnly {
+		fmt.Fprintln(os.Stdout, "The configuration file is correct")
+		os.Exit(0)
 	}
 
 	// Close the log file at termination if not stdout
