@@ -1,0 +1,2 @@
+findtype typeconfig.json
+pause
