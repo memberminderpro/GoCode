@@ -242,7 +242,6 @@ func walkGoDir(path string, dirEntry *godirwalk.Dirent) error {
 
 // Common file processing regardless of directory parsing method
 func processPath(path string, isDir bool, skipDirReturn error) error {
-	totalFiles++
 	originalPath := path
 
 	// Clean up the slashes
@@ -260,6 +259,9 @@ func processPath(path string, isDir bool, skipDirReturn error) error {
 		// Skip building a crc on just a directory name
 		return nil
 	}
+
+	// Increment total file count
+	totalFiles++
 
 	// Compute the CRC64 for the specified file
 	data, err := computeFileCRC64(path)
