@@ -110,7 +110,9 @@ func uncompressFile(zipName, fileName, password string) ([]byte, error) {
 		}
 
 		// Set the password and read into a buffer
-		entry.SetPassword(password)
+		if len(password) > 0 {
+			entry.SetPassword(password)
+		}
 
 		fileReader, err := entry.Open()
 
@@ -189,7 +191,7 @@ func computeFileCRC64(path string) (crcInfo, error) {
 		return response, err
 	}
 
-	defer fileRdr.Close()
+	//defer fileRdr.Close()
 
 	// Read the file in and compute the crc
 	content, err := ioutil.ReadAll(fileRdr)
@@ -214,6 +216,15 @@ func computeFileCRC64(path string) (crcInfo, error) {
 
 	// Format the date
 	response.modified = info.ModTime()
+
+	// Cleanup
+	err = fileRdr.Close()
+
+	if err != nil {
+		return response, err
+	}
+
+	content = nil
 
 	// Return result
 	return response, nil

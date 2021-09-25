@@ -1,10 +1,11 @@
 {
-    "rootdirs"   : ["c:/Development/DACdbAPI/APIProd", "c:/Development/DACdbAPI/APITest"],
+    "rootdirs"   : ["c:/Development/Projects"],
     "zipname"   : "dacdbfiles.zip",
     "filename"  : "dacdbfiles.txt",
     "password"  : "",
     "exclude"   : [".svn"],
-    "sendmail"  : true,
+    "sendmail"  : false,
+    "logfile" : "dacdbfiles.log",
     "email"     : 
                 {
                     "server"    : "mail.dacdb.net",
@@ -17,5 +18,9 @@
                     "subject"   : "Filecrc generation status",
                     "attach"    : ["zip", "log"]
                 },
-    "logfile" : "dacdbfiles.log"
+    "debug"     : 
+                {
+                    "stats"     : true,
+                    "method"    : "godirwalk"
+                }
 }

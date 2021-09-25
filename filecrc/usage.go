@@ -16,8 +16,9 @@ func usage() {
     "zipname"   : "filesinfo.zip",
     "filename"  : "stats.txt",
     "password"  : "dacdbrocks",
-    "exclude"   : ["file1", "file2"]
-    "sendmail"  : true
+    "exclude"   : ["file1", "file2"],
+    "sendmail"  : true,
+    "logfile" : "filecrc.log",
     "email"     : {
         "server"  : "mail.server.net",
         "port"    : 587,
@@ -29,7 +30,10 @@ func usage() {
         "subject" : "Filecrc generation status",
         "attach"  : ["log", "zip"]
     },
-    "logfile" : "filecrc.log"
+	"debug"     : {
+		"stats"   : true,
+		"method"  : "godirwalk"
+	}
 }`)
 
 	fmt.Fprintf(os.Stderr, "Keywords\n")

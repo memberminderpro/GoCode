@@ -27,6 +27,9 @@ const (
 	KwEmailSubject = "subject"  // JSON Config email subject
 	KwEmailAttach  = "attach"   // JSON Config switch to attach finished zip file
 	KwLogFile      = "logfile"  // JSON Config log file name
+	KwDebug        = "debug"    // Debug section
+	KwDebugStats   = "stats"    // Print debug stats
+	KwDebugMethod  = "method"   // Tree walking method
 )
 
 // Other constants
@@ -37,27 +40,27 @@ const (
 )
 
 // getParms Read and parse the JSON configuration file
-func getParms() error {
-	if len(os.Args) < 2 {
+func getParms(args []string) error {
+	if len(args) < 2 {
 		return fmt.Errorf("you must specify a configuration file name")
 	}
 
 	// Check for a -v switch
 	var configSpec string
-	if len(os.Args) >= 2 {
+	if len(args) >= 2 {
 		// Check for verify switch
-		if strings.EqualFold(os.Args[1], "-v") {
-			if len(os.Args) != 3 {
+		if strings.EqualFold(args[1], "-v") {
+			if len(args) != 3 {
 				// There's a -v but no config file
 				return fmt.Errorf("you must specify a configuration file with -v")
 			}
 
 			// Verify switch with a config parameter
 			parseParmsOnly = true
-			configSpec = os.Args[2]
+			configSpec = args[2]
 		} else {
 			// No verify switch
-			configSpec = os.Args[1]
+			configSpec = args[1]
 		}
 	}
 
@@ -161,6 +164,31 @@ func getParms() error {
 			}
 		case KwLogFile:
 			logFileName = val.(string)
+
+		case KwDebug:
+			debugInfo := val.(map[string]interface{})
+			for name, debug := range debugInfo {
+				switch name {
+				case KwDebugStats:
+					printStats = debug.(bool)
+
+				case KwDebugMethod:
+					var methodName = debug.(string)
+					if strings.EqualFold(methodName, MethodFilepath) {
+						walkFilepath = true
+					} else if strings.EqualFold(methodName, MethodGoDir) {
+						walkFilepath = false
+					} else {
+						fmt.Fprintf(os.Stderr, "Invalid directory walk method must be one of %s or %s", MethodGoDir, MethodFilepath)
+						success = false
+					}
+
+				default:
+					fmt.Fprintf(os.Stderr, "Invalid config file parameter %s\n", key)
+					success = false
+				}
+			}
+
 		default:
 			fmt.Fprintf(os.Stderr, "Invalid config file parameter %s\n", key)
 			success = false
