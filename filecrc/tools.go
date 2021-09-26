@@ -191,19 +191,18 @@ func computeFileCRC64(path string) (crcInfo, error) {
 		return response, err
 	}
 
-	//defer fileRdr.Close()
-
-	// Read the file in and compute the crc
-	content, err := ioutil.ReadAll(fileRdr)
+	// Prepare the response
+	info, err := fileRdr.Stat()
 
 	if err != nil {
 		return response, err
 	}
 
-	// Prepare the response
-	info, err := fileRdr.Stat()
+	content := make([]byte, info.Size())
 
-	if err != nil {
+	// Read the file in
+
+	if _, err := io.ReadFull(fileRdr, content); err != nil {
 		return response, err
 	}
 

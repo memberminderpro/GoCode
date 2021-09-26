@@ -5,5 +5,7 @@ import (
 )
 
 func main() {
-	run(os.Args)
+	rc := run(os.Args)
+
+	os.Exit(rc)
 }

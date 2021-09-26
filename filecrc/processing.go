@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/karrick/godirwalk"
 )
 
@@ -44,9 +45,11 @@ var excludes map[string]interface{} = make(map[string]interface{}) // Map of dir
 var mismatchedEntries int = 0                                      // Number of entries that did not match
 var newEntries int = 0                                             // Number of newly added entries
 var fileMap map[string]crcInfo = make(map[string]crcInfo, 10000)   // Collection of CRC info for each file
+var totalFileSize int64 = 0                                        // Total size of all files read
+var maxFileSize int64 = 0                                          // Maximum file size read
 
 // initialize Do some initialization
-func run(args []string) {
+func run(args []string) int {
 	startTime := time.Now()
 
 	// Initialize and check status
@@ -55,13 +58,13 @@ func run(args []string) {
 	if parseErrs != nil {
 		fmt.Fprintln(os.Stderr, parseErrs)
 		usage()
-		os.Exit(2)
+		return 2
 	}
 
 	// Check if only validating the parms
 	if parseParmsOnly {
 		fmt.Fprintln(os.Stdout, "The configuration file is correct")
-		os.Exit(0)
+		return 0
 	}
 
 	// Close the log file if not stdout
@@ -77,7 +80,7 @@ func run(args []string) {
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Initialization failed: %s\n", err)
-		os.Exit(2)
+		return 2
 	}
 
 	// Process everything
@@ -89,9 +92,11 @@ func run(args []string) {
 
 	// Display some stats before the email so they're in the logfile
 	fmt.Fprintf(logWriter, "Processing completed\n")
-	fmt.Fprintf(logWriter, "Total files processed: %d\n", totalFiles)
+	fmt.Fprintf(logWriter, "Total files processed: %s\n", niceInt64(int64(totalFiles)))
 	fmt.Fprintf(logWriter, "Number of mismatched entries: %d\n", mismatchedEntries)
-	fmt.Fprintf(logWriter, "Number of entries added:      %d\n", newEntries)
+	fmt.Fprintf(logWriter, "Number of entries added:      %s\n", niceInt64(int64(newEntries)))
+	fmt.Fprintf(logWriter, "Total size of files read: %s\n", niceInt64(totalFileSize))
+	fmt.Fprintf(logWriter, "Maximum file size read: %s\n", niceInt64(maxFileSize))
 
 	// Display system memory stats if requested
 	if printStats {
@@ -104,7 +109,7 @@ func run(args []string) {
 
 	if err != nil {
 		fmt.Fprintf(logWriter, "Error processing\n")
-		os.Exit(2)
+		return 2
 	}
 
 	// Get stop time
@@ -113,7 +118,7 @@ func run(args []string) {
 
 	fmt.Fprintf(logWriter, "Processing completed in %5.2f minutes\n", runTime.Minutes())
 
-	os.Exit(0)
+	return 0
 }
 
 func initialize() (err error) {
@@ -314,6 +319,12 @@ func processPath(path string, isDir bool, skipDirReturn error) error {
 		newEntries++
 	}
 
+	// Update sizes
+	totalFileSize = totalFileSize + data.size
+
+	if data.size > maxFileSize {
+		maxFileSize = data.size
+	}
 	// Replace or add the data
 	fileMap[keyName] = data
 
@@ -427,6 +438,14 @@ func PrintMemoryStats(header string) {
 	var memStats runtime.MemStats
 	runtime.ReadMemStats(&memStats)
 	// For info on each, see: https://golang.org/pkg/runtime/#MemStats
-	fmt.Fprintf(logWriter, "%s: Alloc=%v MB, TotalAlloc=%v MB, Sys=%v MB, NumGC=%v\n",
-		header, memStats.Alloc/OneMB, memStats.TotalAlloc/OneMB, memStats.Sys/OneMB, memStats.NumGC/OneMB)
+	fmt.Fprintf(logWriter, "%s: Alloc=%s MB, TotalAlloc=%s MB, Sys=%s MB, NumGC=%s\n",
+		header,
+		niceInt64(int64(memStats.Alloc/OneMB)),
+		niceInt64(int64(memStats.TotalAlloc/OneMB)),
+		niceInt64(int64(memStats.Sys/OneMB)),
+		niceInt64(int64(memStats.NumGC/OneMB)))
+}
+
+func niceInt64(value int64) string {
+	return humanize.Comma(value)
 }

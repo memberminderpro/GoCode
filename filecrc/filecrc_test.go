@@ -2,10 +2,15 @@ package main
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestMain(m *testing.M) {
+func TestMain(t *testing.T) {
+	a := assert.New(t)
 	args := []string{"main", "config.json"}
 
-	run(args)
+	rc := run(args)
+
+	a.Equal(rc, 0)
 }

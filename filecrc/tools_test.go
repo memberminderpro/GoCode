@@ -54,6 +54,15 @@ func TestCRC(t *testing.T) {
 
 	fmt.Printf("%#v\n", otherInfo)
 }
+
+func TestBuildNewName(t *testing.T) {
+	testNames := []string{"testfiles/abc.txt", "testfiles/abc1.txt", "testfiles/abc2.txt", "testfiles/abc"}
+
+	for _, name := range testNames {
+		os.Create(name)
+	}
+
+}
 func TestBuildName(t *testing.T) {
 	a := assert.New(t)
 

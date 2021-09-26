@@ -17,10 +17,5 @@
                     "cc"        : [],
                     "subject"   : "Filecrc generation status",
                     "attach"    : ["zip", "log"]
-                },
-    "debug"     : 
-                {
-                    "stats"     : true,
-                    "method"    : "godirwalk"
                 }
 }
