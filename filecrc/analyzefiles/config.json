@@ -2,9 +2,10 @@
     "rootdirs"  : ["testfiles"],
     "zipname"   : "dacdbfiles.zip",
     "filename"  : "dacdbfiles.txt",
+    "hostname"  : "MyLaptop",
     "password"  : "",
     "exclude"   : [".svn", "ignoreme"],
-    "sendmail"  : false,
+    "sendmail"  : true,
     "logfile"   : "dacdbfiles.log",
     "email"     : 
                 {

@@ -22,6 +22,7 @@ func usage() {
     "zipname"   : "filesinfo.zip",
     "filename"  : "stats.txt",
     "password"  : "dacdbrocks",
+    "hostname"  : "My server",
     "exclude"   : ["pattern1", "pattern2"],
     "sendmail"  : true,
     "logfile"   : "filecrc.log",

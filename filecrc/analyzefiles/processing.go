@@ -510,7 +510,10 @@ func processEmail(err error) error {
 		case AttachLogName:
 			attachFiles = append(attachFiles, logFileName)
 		case AttachZipName:
-			attachFiles = append(attachFiles, outputZipFile)
+			if !parmAnalyzeOnly {
+				// Nothing to attach when analyzing
+				attachFiles = append(attachFiles, outputZipFile)
+			}
 		default:
 			fmt.Fprintf(logWriter, "Invalid attachment type for sending an email, %s\n", attachType)
 		}
@@ -520,11 +523,16 @@ func processEmail(err error) error {
 	emailSubject := fmt.Sprintf("%s scanned files: %d suspicious, %d total, %d added, %d modified %d deleted",
 		parmHostname, suspiciousCt, totalFiles, newEntries, mismatchedEntries, deletedCt)
 	// setup the message
-	var message string
+	message := ""
+
+	if parmAnalyzeOnly {
+		message += "Analysis only specified, <b>no zip file produced</b><p>"
+	}
+
 	if err != nil {
-		message = "Processing completed <b>in error</b><p>"
+		message += "Processing completed <b>in error</b><p>"
 	} else {
-		message = "Processing completed <b>without errors</b><p>"
+		message += "Processing completed <b>without errors</b><p>"
 	}
 
 	// List attached files
