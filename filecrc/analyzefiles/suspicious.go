@@ -19,7 +19,7 @@ func isSuspicious(data utils.FileInfo, fileData utils.FileInfo) (string, bool) {
 	// Note: You CANNOT verify the modified date against the create date since windows retains the
 	// modified date when copying a file but sets the create date to the time of the copy
 	// so with a copied file the modified date is always less than the created date
-	if data.GetAccessed().Before(data.GetCreated()) || data.GetAccessed().Before(data.GetModified()) {
+	if data.GetAccessed().Before(data.GetCreated()) {
 		violation = "File times are inconsistent"
 	}
 
