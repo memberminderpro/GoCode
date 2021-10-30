@@ -34,7 +34,6 @@ func usage() {
         "from"    : "talend@dacdb.com",
         "to"      : ["peter@dacdb.com"],
         "cc"      : [],
-        "subject" : "Filecrc generation status",
         "attach"  : ["log", "zip"]
     },
 	"debug"    : {
