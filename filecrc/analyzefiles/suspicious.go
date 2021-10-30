@@ -23,20 +23,23 @@ func isSuspicious(data utils.FileInfo, fileData utils.FileInfo) (string, bool) {
 		violation = "File times are inconsistent"
 	}
 
-	// Rule2: Only the size changed
-	if data.GetSize() != fileData.GetSize() && data.GetCRC() == fileData.GetCRC() && data.TimesEqual(fileData) {
-		violation = "Only the size has changed"
-	}
+	// CRC comparisons cannot be done when not generating CRC
+	if !parmExcludeCRC {
+		// Rule2: Only the size changed
+		if data.GetSize() != fileData.GetSize() && data.GetCRC() == fileData.GetCRC() && data.TimesEqual(fileData) {
+			violation = "Only the size has changed"
+		}
 
-	// Rule3: Only the CRC changed
-	if data.GetCRC() != fileData.GetCRC() && data.GetSize() == fileData.GetSize() && data.TimesEqual(fileData) {
-		violation = "Only crc changed"
-	}
+		// Rule3: Only the CRC changed
+		if data.GetCRC() != fileData.GetCRC() && data.GetSize() == fileData.GetSize() && data.TimesEqual(fileData) {
+			violation = "Only crc changed"
+		}
 
-	// Rule4: CRC and size changed but not modified date
-	if data.GetCRC() != fileData.GetCRC() && data.GetSize() != fileData.GetSize() &&
-		data.GetModified() == fileData.GetModified() {
-		violation = "CRC and size changed but not modified"
+		// Rule4: CRC and size changed but not modified date
+		if data.GetCRC() != fileData.GetCRC() && data.GetSize() != fileData.GetSize() &&
+			data.GetModified() == fileData.GetModified() {
+			violation = "CRC and size changed but not modified"
+		}
 	}
 
 	// Any violations are suspicious

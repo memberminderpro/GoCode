@@ -83,6 +83,7 @@ func getParms(args []string) error {
 	}
 
 	// Do some verifications
+	status := true
 
 	if len(parmConfigName) == 0 {
 		// See if possibly they used it as a positional parameter
@@ -91,7 +92,8 @@ func getParms(args []string) error {
 			// Use the first positional parameter as the config name
 			parmConfigName = posArgs[0]
 		} else {
-			return fmt.Errorf("the configuration file name is required")
+			fmt.Fprintf(os.Stderr, "The configuration file name is required\n")
+			status = false
 		}
 	}
 
@@ -99,6 +101,25 @@ func getParms(args []string) error {
 	if parmVerifyExclude {
 		parmVerifyConfig = true
 	}
+
+	// Excluding crc may only be used with analyze
+	if parmExcludeCRC && !parmAnalyzeOnly {
+		fmt.Fprintf(os.Stderr, "You must also specify the analyze only flag when excluding crc calculations\n")
+		status = false
+	}
+
+	if (parmVerifyExclude || parmVerifyConfig) && (parmAnalyzeOnly || parmExcludeCRC || len(parmBaseName) > 0) {
+		fmt.Fprintf(os.Stderr, "Mutually exclusive parameters specified\n")
+		fmt.Fprintf(os.Stderr, "-%c and -%c cannot be used with -%c -%c or -%c\n",
+			FlagVerifyConfig, FlagVerifyExclude, FlagAnalyzeOnly, FlagExcludeCRC, FlagBaseName)
+		status = false
+	}
+
+	// Check if you should move on
+	if !status {
+		return fmt.Errorf("processing terminated due to errors")
+	}
+
 	// Process the config file
 	err = getConfig(parmConfigName)
 
