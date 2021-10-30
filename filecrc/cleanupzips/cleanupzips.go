@@ -153,7 +153,7 @@ func process() int {
 			num, _ := strconv.Atoi(matches[0][1])
 
 			// Add the value to the map
-			fileMap[num] = info.Name()
+			fileMap[num] = path + info.Name()
 			numList = append(numList, num)
 		}
 	}
