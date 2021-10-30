@@ -124,8 +124,15 @@ func run(args []string) int {
 	fmt.Fprintf(logWriter, "Number of modified files:     %s\n", utils.NiceInt(mismatchedEntries))
 	fmt.Fprintf(logWriter, "Number of files added:        %s\n", utils.NiceInt(newEntries))
 	fmt.Fprintf(logWriter, "Number of files deleted:      %s\n", utils.NiceInt(deletedCt))
-	fmt.Fprintf(logWriter, "Total size of files read:     %s\n", utils.NiceInt64(totalFileSize))
-	fmt.Fprintf(logWriter, "Maximum file size read:       %s\n", utils.NiceInt64(maxFileSize))
+
+	// Exclude stats if no CRC
+	if !parmExcludeCRC {
+		fmt.Fprintf(logWriter, "Total size of files read:     %s\n", utils.NiceInt64(totalFileSize))
+		fmt.Fprintf(logWriter, "Maximum file size read:       %s\n", utils.NiceInt64(maxFileSize))
+	} else {
+		fmt.Fprintf(logWriter, "Total size of files read:     %s\n", "No files were read")
+		fmt.Fprintf(logWriter, "Maximum file size read:       %s\n", "No files were read")
+	}
 
 	// Display system memory stats if requested
 	if printStats {
@@ -254,6 +261,10 @@ func process() (err error) {
 
 	if compareFields {
 		fmt.Fprintf(logWriter, "Processing root dir against file %s\n", inputZipFile)
+	}
+
+	if parmExcludeCRC {
+		fmt.Fprintf(logWriter, "No CRC will be computed or compared\n")
 	}
 
 	// If you are setup to compare fields, load the file
