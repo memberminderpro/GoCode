@@ -1,6 +1,10 @@
 package main
 
-import "dacdb.com/GoCode/filecrc/utils"
+import (
+	"time"
+
+	"dacdb.com/GoCode/filecrc/utils"
+)
 
 var (
 	suspiciousCt int = 0 // Number of suspicious files encountered
@@ -19,8 +23,17 @@ func isSuspicious(data utils.FileInfo, fileData utils.FileInfo) (string, bool) {
 	// Note: You CANNOT verify the modified date against the create date since windows retains the
 	// modified date when copying a file but sets the create date to the time of the copy
 	// so with a copied file the modified date is always less than the created date
-	if data.GetAccessed().Before(data.GetCreated()) {
-		violation = "File times are inconsistent"
+	if data.GetAccessed().Nanosecond() == 0 || data.GetCreated().Nanosecond() == 0 {
+		access := time.Unix(data.GetAccessed().Unix(), 0)
+		create := time.Unix(data.GetCreated().Unix(), 0)
+
+		if access.Before(create) {
+			violation = "Short file times are inconsistent"
+		}
+	} else {
+		if data.GetAccessed().Before(data.GetCreated()) {
+			violation = "File times are inconsistent"
+		}
 	}
 
 	// CRC comparisons cannot be done when not generating CRC
