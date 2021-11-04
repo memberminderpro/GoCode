@@ -112,7 +112,8 @@ func (info *FileInfo) BuildCRCLine() string {
 
 func (info *FileInfo) Display(log *os.File) {
 	fmt.Fprintf(log, "File name: %s\nFlags: '%s', Size: %s, CRC: %d\nCreated: %s, Modified: %s, Accessed: %s\n",
-		info.name, info.GetStatus(), NiceInt64(info.size), info.crc, info.created, info.modified, info.accessed)
+		info.name, info.GetStatus(), NiceInt64(info.size), info.crc,
+		info.created.Format(time.RFC3339Nano), info.modified.Format(time.RFC3339Nano), info.accessed.Format(time.RFC3339Nano))
 }
 
 // parseCRCLine Parse a line of file status into a CRCInfo
