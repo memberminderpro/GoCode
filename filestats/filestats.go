@@ -5,6 +5,7 @@ import (
 	"hash/crc64"
 	"io"
 	"os"
+	"strings"
 	"syscall"
 	"time"
 
@@ -107,7 +108,13 @@ func parseParms() bool {
 
 	// Parse the specs if provided
 	if len(parmAccessSpec) > 0 {
-		parmAccessTime, err = time.Parse(time.RFC3339Nano, parmAccessSpec)
+		var err error = nil
+
+		if strings.ToLower(parmAccessSpec) == "now" {
+			parmAccessTime = time.Now()
+		} else {
+			parmAccessTime, err = time.Parse(time.RFC3339Nano, parmAccessSpec)
+		}
 
 		if err != nil {
 			successFull = false
@@ -116,7 +123,13 @@ func parseParms() bool {
 	}
 
 	if len(parmModSpec) > 0 {
-		parmModTime, err = time.Parse(time.RFC3339Nano, parmModSpec)
+		var err error = nil
+
+		if strings.ToLower(parmModSpec) == "now" {
+			parmModTime = time.Now()
+		} else {
+			parmModTime, err = time.Parse(time.RFC3339Nano, parmModSpec)
+		}
 
 		if err != nil {
 			successFull = false
@@ -149,7 +162,9 @@ func usage(out *os.File) {
 	fmt.Fprintf(out, "Usage: [-%c accessSpec] [-%c modifiedSpec] [-%c] filename\n", FlagAccessTime, FlagModTime, flagExcludeCRC)
 	fmt.Fprintf(out, "When run without any options, the info for the file is displayed\n")
 	fmt.Fprintf(out, "  accessSpec:   A date/time specification for setting the last accessed date/time\n")
+	fmt.Fprintf(out, "                a spec of 'now' will use the current date/time\n")
 	fmt.Fprintf(out, "  modifiedSpec: A date/timespecification for setting the modified date/time\n")
+	fmt.Fprintf(out, "                a spec of 'now' will use the current date/time\n")
 	fmt.Fprintf(out, "  x: exclude computing CRC\n")
 	fmt.Fprintf(out, "Note: All specifications follow RFC3339Nano (%s)\n", time.RFC3339Nano)
 	fmt.Fprintf(out, "\n")
