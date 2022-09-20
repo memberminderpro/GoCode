@@ -5,7 +5,7 @@
     "hostname"  : "MyLaptop",
     "password"  : "",
     "exclude"   : [".svn", "ignoreme"],
-    "sendmail"  : false,
+    "sendmail"  : true,
     "logfile"   : "dacdbfiles.log",
     "email"     : 
                 {
@@ -14,7 +14,7 @@
                     "user"      : "talend@dacdb.com",
                     "code"      : "bkV8yta7v2X",
                     "from"      : "talend@dacdb.com",
-                    "to"        : ["peter@dacdb.com"],
+                    "to"        : ["peter@silvergatepartners.com"],
                     "cc"        : [],
                     "attach"    : ["zip", "log"]
                 }

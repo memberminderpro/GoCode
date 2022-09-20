@@ -203,13 +203,13 @@ func getParms() error {
 		}
 	}
 
-	// Check email using example.com before continuing
-	if emailFlag && success {
-		var toList []string = []string{"test@example.com"}
+	// Check email only when verifying the config
+	if emailFlag && success && parseParmsOnly {
+		var toList []string = []string{"webmaster@dacdb.com"}
 		var ccList []string = make([]string, 0)
 		var attachList []string = make([]string, 0)
 
-		mailCheck := sendEmail(emailFrom, toList, ccList, emailSubject, "A test message", attachList, emailCredentials)
+		mailCheck := sendEmail(emailFrom, toList, ccList, "Email test message", "Email config verification message", attachList, emailCredentials)
 
 		if mailCheck != nil {
 			success = false

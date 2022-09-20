@@ -25,7 +25,6 @@ var (
 	emailFrom        string                                // Email from email address
 	emailToList      []string       = make([]string, 0)    // To distribution list
 	emailCCList      []string       = make([]string, 0)    // Email CC distribution list
-	emailSubject     string                                // Email subject
 	logFileName      string                                // Name for logging (defaults to stderr)
 	hostName         string         = ""                   // Text name of the server for email comments
 	logWriter        *os.File       = os.Stdout            // Default log output

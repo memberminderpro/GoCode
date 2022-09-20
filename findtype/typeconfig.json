@@ -4,7 +4,7 @@
     "sendmail"    : true,
     "lognames"    : false,
     "logfile"     : "file_extensions.log",
-    "hostname"  : "MyLaptop",
+    "hostname"    : "MyLaptop",
     "email"       : 
     {
         "server"    : "mail.dacdb.net",

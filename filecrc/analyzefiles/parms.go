@@ -336,13 +336,13 @@ func getConfig(configSpec string) error {
 		}
 	}
 
-	// Check email using example.com before continuing
-	if emailFlag && success {
-		var toList []string = []string{"test@example.com"}
+	// Check email before continuing when verifying
+	if emailFlag && success && parmVerifyConfig {
+		var toList []string = []string{"webmaster@dacdb.com"}
 		var ccList []string = make([]string, 0)
 		var attachList []string = make([]string, 0)
 
-		mailCheck := utils.SendEmail(emailFrom, toList, ccList, emailSubject, "A test message", attachList, emailCredentials)
+		mailCheck := utils.SendEmail(emailFrom, toList, ccList, "Email test message", "Email config verification message", attachList, emailCredentials)
 
 		if mailCheck != nil {
 			success = false
