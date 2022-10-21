@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -33,7 +34,6 @@ var (
 	emailFrom        string                                // Email from email address
 	emailToList      []string          = make([]string, 0) // To distribution list
 	emailCCList      []string          = make([]string, 0) // Email CC distribution list
-	emailSubject     string                                // Email subject
 	emailAttachments []string          = make([]string, 0) // Collection of logical file names to attach
 	logFileName      string                                // Name for logging (defaults to stderr)
 	totalFiles       int               = 0                 // Total nuber of files processed
@@ -391,10 +391,15 @@ func processPath(path string, isDir bool, baseName string, skipDirReturn error) 
 		return nil
 	}
 
-	// Compute the CRC64 for the specified file
+	// Get the times and compute the CRC64 for the specified file
 	data, err := computeFileCRC64(path)
 
 	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			// Went away while processing, ignore
+			return nil
+		}
+
 		fmt.Fprintf(logWriter, "Error processing file '%s': %s\n", originalPath, err)
 		return err
 	}

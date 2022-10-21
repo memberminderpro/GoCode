@@ -24,15 +24,15 @@ func computeFileCRC64(path string) (utils.FileInfo, error) {
 	// Get the file stat info
 	info, err := os.Stat(path)
 
+	if err != nil {
+		return response, err
+	}
+
 	// Get the date/time
 	fs := info.Sys().(*syscall.Win32FileAttributeData)
 	response.SetAccessed(time.Unix(0, fs.LastAccessTime.Nanoseconds()))
 	response.SetModified(time.Unix(0, fs.LastWriteTime.Nanoseconds()))
 	response.SetCreated(time.Unix(0, fs.CreationTime.Nanoseconds()))
-
-	if err != nil {
-		return response, err
-	}
 
 	if parmExcludeCRC {
 		response.SetCRC(0)
