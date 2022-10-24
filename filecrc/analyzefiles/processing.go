@@ -115,7 +115,7 @@ func run(args []string) int {
 	}
 
 	// Compute number of files deleted
-	deletedCt = len(fileMap) - newEntries - unchangedEntries - suspiciousCt - mismatchedEntries
+	deletedCt = len(fileMap) - newEntries - unchangedEntries - mismatchedEntries
 
 	// Display some stats before the email so they're in the logfile
 	fmt.Fprintf(logWriter, "Processing completed\n")
@@ -407,26 +407,26 @@ func processPath(path string, isDir bool, baseName string, skipDirReturn error) 
 	// If not only building, then lookup the info and compare
 	keyName := strings.ToLower(data.GetName())
 
-	if compareFields {
-		fileData, found := fileMap[keyName]
+	fileData, found := fileMap[keyName]
 
+	// Check if the file is suspicious
+	reason, suspicious := isSuspicious(data, fileData)
+
+	if suspicious {
+		fmt.Fprintf(logWriter, "Suspicious file %s: %s\n", originalPath, reason)
+		suspiciousCt++
+		data.SetSuspicious()
+	}
+
+	if compareFields {
 		// if it's found, then do the compare
 		if found {
-			// Check if the file is suspicious
-			reason, suspicious := isSuspicious(data, fileData)
-
-			if suspicious {
-				fmt.Fprintf(logWriter, "Suspicious file %s: %s\n", originalPath, reason)
-				suspiciousCt++
-				data.SetSuspicious()
+			// Accumulate the number of changed records
+			if !data.IsEqual(fileData) {
+				data.SetMismatched()
+				mismatchedEntries++
 			} else {
-				// Accumulate the number of changed records
-				if !data.IsEqual(fileData) {
-					data.SetMismatched()
-					mismatchedEntries++
-				} else {
-					unchangedEntries++
-				}
+				unchangedEntries++
 			}
 		} else {
 			// Not in the original file so count it as an add

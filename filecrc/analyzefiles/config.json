@@ -5,7 +5,7 @@
     "hostname"  : "MyLaptop",
     "password"  : "",
     "exclude"   : [".svn", "ignoreme"],
-    "sendmail"  : true,
+    "sendmail"  : false,
     "logfile"   : "dacdbfiles.log",
     "email"     : 
                 {

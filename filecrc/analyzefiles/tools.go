@@ -62,7 +62,11 @@ func computeFileCRC64(path string) (utils.FileInfo, error) {
 		}
 
 		// Reset the times to before reading it
-		os.Chtimes(path, response.GetAccessed(), response.GetModified())
+		err = os.Chtimes(path, response.GetAccessed(), response.GetModified())
+
+		if err != nil {
+			return response, err
+		}
 
 		// Help out the garbage collection
 		content = nil
