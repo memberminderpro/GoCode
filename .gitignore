@@ -1,0 +1,12 @@
+
+# /
+/.vscode
+
+# /cfxref/
+/cfxref/log.txt
+/cfxref/missing.txt
+/cfxref/orphans.txt
+/cfxref/selfcontainedmethods.txt
+
+# /findtype/
+/findtype/file_extensions.log
